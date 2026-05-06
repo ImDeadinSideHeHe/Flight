@@ -9,11 +9,12 @@ import {
   ArrowLeftStartOnRectangleIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
-import { TbCoins, TbUser } from "react-icons/tb";
+import { TbUser } from "react-icons/tb";
 import { Link } from "react-router";
 
 // Local Imports
 import { Avatar, AvatarDot, Button } from "components/ui";
+import { useAuthContext } from "app/contexts/auth/context";
 
 // ----------------------------------------------------------------------
 
@@ -27,14 +28,6 @@ const links = [
     color: "warning",
   },
   {
-    id: "4",
-    title: "Billing",
-    description: "Your billing information",
-    to: "/settings/billing",
-    Icon: TbCoins,
-    color: "error",
-  },
-  {
     id: "5",
     title: "Settings",
     description: "Webapp settings",
@@ -45,16 +38,24 @@ const links = [
 ];
 
 export function Profile() {
+  const { logout, user } = useAuthContext();
+  const displayName = user?.name || user?.email || "Signed in user";
+  const userRole = user?.role || "Authenticated User";
+
   return (
     <Popover className="relative">
       <PopoverButton
         as={Avatar}
-        size={12}
+        size={9}
         role="button"
-        src="/images/avatar/avatar-12.jpg"
-        alt="Profile"
+        name={displayName}
+        initialColor="primary"
+        initialVariant="soft"
         indicator={
-          <AvatarDot color="success" className="ltr:right-0 rtl:left-0" />
+          <AvatarDot
+            color="success"
+            className="-m-0.5 size-3 ltr:right-0 rtl:left-0"
+          />
         }
         classNames={{
           root: "cursor-pointer",
@@ -62,14 +63,14 @@ export function Profile() {
       />
       <Transition
         enter="duration-200 ease-out"
-        enterFrom="translate-x-2 opacity-0"
-        enterTo="translate-x-0 opacity-100"
+        enterFrom="translate-y-2 opacity-0"
+        enterTo="translate-y-0 opacity-100"
         leave="duration-200 ease-out"
-        leaveFrom="translate-x-0 opacity-100"
-        leaveTo="translate-x-2 opacity-0"
+        leaveFrom="translate-y-0 opacity-100"
+        leaveTo="translate-y-2 opacity-0"
       >
         <PopoverPanel
-          anchor={{ to: "right end", gap: 12 }}
+          anchor={{ to: "bottom end", gap: 12 }}
           className="border-gray-150 shadow-soft dark:border-dark-600 dark:bg-dark-700 z-70 flex w-64 flex-col rounded-lg border bg-white transition dark:shadow-none"
         >
           {({ close }) => (
@@ -77,19 +78,20 @@ export function Profile() {
               <div className="dark:bg-dark-800 flex items-center gap-4 rounded-t-lg bg-gray-100 px-4 py-5">
                 <Avatar
                   size={14}
-                  src="/images/avatar/avatar-12.jpg"
-                  alt="Profile"
+                  name={displayName}
+                  initialColor="primary"
+                  initialVariant="soft"
                 />
                 <div>
                   <Link
                     className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 dark:focus:text-primary-400 text-base font-medium text-gray-700"
                     to="/settings/general"
                   >
-                    Travis Fuller
+                    {displayName}
                   </Link>
 
                   <p className="dark:text-dark-300 mt-0.5 text-xs text-gray-400">
-                    Product Designer
+                    {userRole}
                   </p>
                 </div>
               </div>
@@ -119,7 +121,13 @@ export function Profile() {
                   </Link>
                 ))}
                 <div className="px-4 pt-4">
-                  <Button className="w-full gap-2">
+                  <Button
+                    className="w-full gap-2"
+                    onClick={() => {
+                      close();
+                      logout();
+                    }}
+                  >
                     <ArrowLeftStartOnRectangleIcon className="size-4.5" />
                     <span>Logout</span>
                   </Button>

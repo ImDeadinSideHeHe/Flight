@@ -1,27 +1,24 @@
-import { HomeIcon } from '@heroicons/react/24/outline';
-import DashboardsIcon from 'assets/dualicons/dashboards.svg?react'
-import { NAV_TYPE_ROOT, NAV_TYPE_ITEM } from 'constants/app.constant'
+import { UserGroupIcon } from '@heroicons/react/24/outline';
+import { MdOutlineAirplaneTicket } from "react-icons/md";
+import { NAV_TYPE_ITEM } from 'constants/app.constant'
 
-const ROOT_DASHBOARDS = '/dashboards'
-
-const path = (root, item) => `${root}${item}`;
+const ROOT_FLIGHT = '/flight'
+const ROOT_USER_MANAGEMENT = '/usermanagement'
 
 export const dashboards = {
-    id: 'dashboards',
-    type: NAV_TYPE_ROOT,
-    path: '/dashboards',
-    title: 'Dashboards',
+    id: 'flight',
+    type: NAV_TYPE_ITEM,
+    path: ROOT_FLIGHT,
+    title: 'Flight',
     transKey: 'nav.dashboards.dashboards',
-    Icon: DashboardsIcon,
-    childs: [
-        {
-            id: 'dashboards.home',
-            path: path(ROOT_DASHBOARDS, '/home'),
-            type: NAV_TYPE_ITEM,
-            title: 'Home',
-            transKey: 'nav.dashboards.home',
-            Icon: HomeIcon,
-        },
+    Icon: MdOutlineAirplaneTicket,
+}
 
-    ]
+export const userManagement = {
+    id: 'usermanagement',
+    type: NAV_TYPE_ITEM,
+    path: ROOT_USER_MANAGEMENT,
+    title: 'User Management',
+    transKey: 'nav.usermanagement.usermanagement',
+    Icon: UserGroupIcon,
 }

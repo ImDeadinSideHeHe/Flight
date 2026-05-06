@@ -54,10 +54,10 @@ export function ThemeProvider({ children }) {
     });
   };
 
-  const setThemeLayout = (val) => {
+  const setThemeLayout = () => {
     setSettings({
       ...settings,
-      themeLayout: val,
+      themeLayout: "main-layout",
     });
   };
 
@@ -176,8 +176,8 @@ export function ThemeProvider({ children }) {
   }, [settings.cardSkin]);
 
   useIsomorphicEffect(() => {
-    if (document) document.body.dataset.layout = settings.themeLayout;
-  }, [settings.themeLayout]);
+    if (document) document.body.dataset.layout = "main-layout";
+  }, []);
 
   if (!children) {
     return null;
@@ -187,6 +187,7 @@ export function ThemeProvider({ children }) {
     <ThemeContext
       value={{
         ...settings,
+        themeLayout: "main-layout",
         isDark,
         setMonochromeMode,
         setThemeMode,

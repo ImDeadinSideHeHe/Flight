@@ -13,8 +13,7 @@ import { locales } from "i18n/langs";
 // ----------------------------------------------------------------------
 
 // Set the initial language from i18n or fallback to the default theme language
-const initialLang =
-  localStorage.getItem("i18nextLng") || defaultTheme.defaultLang;
+const initialLang = defaultTheme.defaultLang;
 
 const initialDir = i18n.dir(initialLang);
 

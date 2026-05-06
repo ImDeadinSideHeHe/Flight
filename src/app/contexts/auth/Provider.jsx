@@ -1,13 +1,11 @@
 // Import Dependencies
 import { useEffect, useReducer } from "react";
-import isObject from "lodash/isObject";
 import PropTypes from "prop-types";
-import isString from "lodash/isString";
 
 // Local Imports
-import axios from "utils/axios";
-import { isTokenValid, setSession } from "utils/jwt";
+import { isSupabaseConfigured, supabase } from "supabaseClient";
 import { AuthContext } from "./context";
+import { normalizeUsername, usernameToEmail } from "utils/userEmail";
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +24,7 @@ const reducerHandlers = {
       ...state,
       isAuthenticated,
       isInitialized: true,
+      isLoading: false,
       user,
     };
   },
@@ -34,6 +33,7 @@ const reducerHandlers = {
     return {
       ...state,
       isLoading: true,
+      errorMessage: null,
     };
   },
 
@@ -60,6 +60,7 @@ const reducerHandlers = {
   LOGOUT: (state) => ({
     ...state,
     isAuthenticated: false,
+    isLoading: false,
     user: null,
   }),
 };
@@ -72,28 +73,96 @@ const reducer = (state, action) => {
   return state;
 };
 
+function normalizeUser(user) {
+  if (!user) return null;
+
+  const metadata = user.user_metadata || {};
+  const name = metadata.full_name || metadata.name || user.email;
+
+  return {
+    id: user.id,
+    email: user.email,
+    name,
+    avatar: metadata.avatar_url || null,
+    role: metadata.role || "Authenticated User",
+    raw: user,
+  };
+}
+
+async function resolveLoginEmail(usernameOrEmail) {
+  const input = String(usernameOrEmail ?? "").trim();
+  const generatedEmail = usernameToEmail(input);
+
+  if (!input || input.includes("@")) return generatedEmail;
+
+  const normalizedInput = normalizeUsername(input);
+
+  try {
+    const { data, error } = await supabase
+      .from("User")
+      .select("Username,Email")
+      .eq("IsDeleted", false)
+      .limit(500);
+
+    if (error) return generatedEmail;
+
+    const user = data?.find((item) => {
+      return (
+        normalizeUsername(item.Username) === normalizedInput ||
+        item.Email?.toLowerCase() === generatedEmail
+      );
+    });
+
+    return user?.Email || generatedEmail;
+  } catch (error) {
+    console.error(error);
+    return generatedEmail;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      window.localStorage.removeItem("authToken");
+      dispatch({
+        type: "INITIALIZE",
+        payload: {
+          isAuthenticated: false,
+          user: null,
+        },
+      });
+      return undefined;
+    }
+
+    let isMounted = true;
+
     const init = async () => {
       try {
-        const authToken = window.localStorage.getItem("authToken");
+        window.localStorage.removeItem("authToken");
 
-        if (authToken && isTokenValid(authToken)) {
-          setSession(authToken);
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-          const response = await axios.get("/user/profile");
-          const { user } = response.data;
+        if (error) {
+          throw error;
+        }
 
+        if (isMounted) {
           dispatch({
             type: "INITIALIZE",
             payload: {
-              isAuthenticated: true,
-              user,
+              isAuthenticated: Boolean(session?.user),
+              user: normalizeUser(session?.user),
             },
           });
-        } else {
+        }
+      } catch (err) {
+        console.error(err);
+        if (isMounted) {
           dispatch({
             type: "INITIALIZE",
             payload: {
@@ -102,44 +171,66 @@ export function AuthProvider({ children }) {
             },
           });
         }
-      } catch (err) {
-        console.error(err);
-        dispatch({
-          type: "INITIALIZE",
-          payload: {
-            isAuthenticated: false,
-            user: null,
-          },
-        });
       }
     };
 
     init();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+
+      dispatch({
+        type: "INITIALIZE",
+        payload: {
+          isAuthenticated: Boolean(session?.user),
+          user: normalizeUser(session?.user),
+        },
+      });
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = async ({ username, password }) => {
+  const login = async ({ email, username, password }) => {
     dispatch({
       type: "LOGIN_REQUEST",
     });
 
     try {
-      const response = await axios.post("/login", {
-        username,
+      if (!isSupabaseConfigured || !supabase) {
+        throw new Error("Supabase is not configured. Check your .env file.");
+      }
+
+      const loginEmail = await resolveLoginEmail(email || username);
+
+      if (!loginEmail) {
+        throw new Error("Username is required.");
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
         password,
       });
 
-      const { authToken, user } = response.data;
-
-      if (!isString(authToken) && !isObject(user)) {
-        throw new Error("Response is not vallid");
+      if (error) {
+        throw new Error(
+          "Invalid login. Use the username from User Management, for example daniel tan, or the generated email daniel.tan@gmail.com.",
+        );
       }
 
-      setSession(authToken);
+      if (!data.user) {
+        throw new Error("Login failed. Please check your email and password.");
+      }
 
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: {
-          user,
+          user: normalizeUser(data.user),
         },
       });
     } catch (err) {
@@ -153,7 +244,16 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    setSession(null);
+    window.localStorage.removeItem("authToken");
+
+    if (isSupabaseConfigured && supabase) {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error(error);
+      }
+    }
+
     dispatch({ type: "LOGOUT" });
   };
 

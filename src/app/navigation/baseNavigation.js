@@ -1,13 +1,22 @@
 import { NAV_TYPE_ITEM, } from "constants/app.constant";
-import DashboardsIcon from 'assets/dualicons/dashboards.svg?react'
+import { UserGroupIcon } from "@heroicons/react/24/outline";
+import { MdOutlineAirplaneTicket } from "react-icons/md";
 
 export const baseNavigation = [
     {
-        id: 'dashboards',
+        id: 'flight',
         type: NAV_TYPE_ITEM,
-        path: '/dashboards',
-        title: 'Dashboards',
+        path: '/flight',
+        title: 'Flight',
         transKey: 'nav.dashboards.dashboards',
-        Icon: DashboardsIcon,
+        Icon: MdOutlineAirplaneTicket,
+    },
+    {
+        id: 'usermanagement',
+        type: NAV_TYPE_ITEM,
+        path: '/usermanagement',
+        title: 'User Management',
+        transKey: 'nav.usermanagement.usermanagement',
+        Icon: UserGroupIcon,
     },
 ]

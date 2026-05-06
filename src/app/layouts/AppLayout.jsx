@@ -4,7 +4,6 @@ import { useState } from "react";
 
 // Local Imports
 import { useSidebarContext } from "app/contexts/sidebar/context";
-import { useThemeContext } from "app/contexts/theme/context";
 import { useBreakpointsContext } from "app/contexts/breakpoint/context";
 import { useIsomorphicEffect } from "hooks";
 
@@ -13,7 +12,6 @@ import { useIsomorphicEffect } from "hooks";
 const dataset = document?.body?.dataset;
 
 export function AppLayout() {
-  const { themeLayout } = useThemeContext();
   const { close, open } = useSidebarContext();
   const { lgAndDown, xlAndUp } = useBreakpointsContext();
   const [isMounted, setIsMounted] = useState(false);
@@ -35,10 +33,10 @@ export function AppLayout() {
 
     return () => {
       if (dataset) {
-        dataset.layout = themeLayout;
+        dataset.layout = "main-layout";
       }
     };
-  }, [themeLayout]);
+  }, []);
 
   useIsomorphicEffect(() => {
     setIsMounted(true);

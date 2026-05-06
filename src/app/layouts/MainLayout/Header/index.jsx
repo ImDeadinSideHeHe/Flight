@@ -3,12 +3,8 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 // Local Imports
-import SearchIcon from "assets/dualicons/search.svg?react";
-import { SidebarToggleBtn } from "components/shared/SidebarToggleBtn";
 import { Button } from "components/ui";
-import { Notifications } from "components/template/Notifications";
-import { RightSidebar } from "components/template/RightSidebar";
-import { LanguageSelector } from "components/template/LaguageSelector";
+import { Profile } from "../Profile";
 import { Search } from "components/template/Search";
 import { useThemeContext } from "app/contexts/theme/context";
 
@@ -40,20 +36,18 @@ export function Header() {
   return (
     <header
       className={clsx(
-        "app-header transition-content sticky top-0 z-20 flex h-[65px] shrink-0 items-center justify-between border-b border-gray-200 bg-white/80 px-(--margin-x) backdrop-blur-sm backdrop-saturate-150 dark:border-dark-600",
+        "app-header transition-content sticky top-0 z-20 flex h-[65px] shrink-0 items-center border-b border-gray-200 bg-white/80 px-(--margin-x) backdrop-blur-sm backdrop-saturate-150 dark:border-dark-600",
         cardSkin === "shadow" ? "dark:bg-dark-750/80" : "dark:bg-dark-900/80",
       )}
     >
-      <SidebarToggleBtn />
-
-      <div className="flex items-center gap-2 ltr:-mr-1.5 rtl:-ml-1.5">
+      <div className="flex w-full items-center justify-between gap-2">
         <Search
           renderButton={(open) => (
             <>
               <Button
                 onClick={open}
                 unstyled
-                className="h-8 w-64 justify-between gap-2 rounded-full border border-gray-200 px-3 text-xs-plus hover:border-gray-400 dark:border-dark-500 dark:hover:border-dark-400 max-sm:hidden"
+                className="h-8 w-64 justify-between gap-2 rounded-sm border border-gray-200 px-3 text-xs-plus hover:border-gray-400 dark:border-dark-500 dark:hover:border-dark-400 max-sm:hidden"
               >
                 <div className="flex items-center gap-2">
                   <MagnifyingGlassIcon className="size-4" />
@@ -70,14 +64,12 @@ export function Header() {
                 isIcon
                 className="relative size-9 rounded-full sm:hidden"
               >
-                <SearchIcon className="size-6 text-gray-900 dark:text-dark-100" />
+                <MagnifyingGlassIcon className="size-6 text-gray-900 dark:text-dark-100" />
               </Button>
             </>
           )}
         />
-        <Notifications />
-        <RightSidebar />
-        <LanguageSelector />
+        <Profile />
       </div>
     </header>
   );

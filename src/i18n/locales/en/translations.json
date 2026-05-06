@@ -1,8 +1,11 @@
 {
   "nav": {
     "dashboards": {
-      "dashboards": "Dashboards",
-      "home": "Home"
+      "dashboards": "Flight",
+      "home": "Flight Details"
+    },
+    "usermanagement": {
+      "usermanagement": "User Management"
     },
     "settings": {
       "settings": "Settings",

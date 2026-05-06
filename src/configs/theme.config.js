@@ -17,7 +17,7 @@ export const defaultTheme = {
     // If true, the theme uses a monochrome color palette  
 
     themeLayout: "main-layout",  
-    // Options: "main-layout", "sideblock"  
+    // The app uses the main layout only.
     cardSkin: "bordered",  
     // Options: "bordered", "shadow"  
 
