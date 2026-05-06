@@ -40,6 +40,11 @@ Main database tables:
   - `TakeOff_Time`
   - `Landing_Time`
   - `Duration`
+  - `IsDeleted`
+  - `created_at`
+  - `created_by`
+  - `modified_at`
+  - `modified_by`
 - `User`
   - `id`
   - `Username`
@@ -47,9 +52,10 @@ Main database tables:
   - `Phone`
   - `IsDeleted`
   - `created_at`
+  - `created_by`
   - `modified_at`
+  - `modified_by`
 
-Deleted users are soft-deleted by setting `IsDeleted` to `true`, then hidden from the user management table.
 
 ## Run Locally
 
@@ -63,12 +69,6 @@ Start the development server:
 
 ```bash
 npm run dev
-```
-
-Open the local URL shown in the terminal, usually:
-
-```text
-http://localhost:5173
 ```
 
 ## Build
