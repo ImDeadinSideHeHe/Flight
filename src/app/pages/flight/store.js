@@ -4,6 +4,8 @@ import { isSupabaseConfigured, supabase } from "supabaseClient";
 
 const TABLE_NAME = "FlightDetails";
 const missingConfigMessage = "Missing Supabase URL or publishable key in .env";
+const flightSelectColumns =
+  "id,TailNumber,FlightID,TakeOff_Time,Landing_Time,Duration,Created_At,Created_By,Modified_At,Modified_By,IsDeleted";
 
 export const emptyFlightForm = {
   TailNumber: "",
@@ -74,6 +76,24 @@ function assertSupabaseConfigured() {
   }
 }
 
+async function getCurrentUserId() {
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+
+  if (error) throw error;
+
+  return session?.user?.id ?? null;
+}
+
+function getUpdateAuditPayload(userId) {
+  return {
+    Modified_At: new Date().toISOString(),
+    Modified_By: userId,
+  };
+}
+
 export function getFlightFormValues(flight) {
   if (!flight) return emptyFlightForm;
 
@@ -105,7 +125,8 @@ export function useFlightDetailsStore() {
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .select("id,TailNumber,FlightID,TakeOff_Time,Landing_Time,Duration")
+      .select(flightSelectColumns)
+      .eq("IsDeleted", false)
       .order("id", { ascending: true });
 
     if (error) {
@@ -122,44 +143,64 @@ export function useFlightDetailsStore() {
     assertSupabaseConfigured();
     setIsSaving(true);
 
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .insert(toPayload(values))
-      .select()
-      .single();
+    try {
+      const userId = await getCurrentUserId();
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .insert({
+          ...toPayload(values),
+          Created_By: userId,
+          IsDeleted: false,
+        })
+        .select()
+        .single();
 
-    setIsSaving(false);
+      if (error) throw error;
 
-    if (error) throw error;
-
-    setFlights((current) => [...current, data]);
-    return data;
+      setFlights((current) => [...current, data]);
+      return data;
+    } finally {
+      setIsSaving(false);
+    }
   }, []);
 
   const updateFlight = useCallback(async (id, values) => {
     assertSupabaseConfigured();
     setIsSaving(true);
 
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .update(toPayload(values))
-      .eq("id", id)
-      .select()
-      .single();
+    try {
+      const userId = await getCurrentUserId();
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .update({
+          ...toPayload(values),
+          ...getUpdateAuditPayload(userId),
+        })
+        .eq("id", id)
+        .select()
+        .single();
 
-    setIsSaving(false);
+      if (error) throw error;
 
-    if (error) throw error;
-
-    setFlights((current) =>
-      current.map((flight) => (flight.id === id ? data : flight)),
-    );
-    return data;
+      setFlights((current) =>
+        current.map((flight) => (flight.id === id ? data : flight)),
+      );
+      return data;
+    } finally {
+      setIsSaving(false);
+    }
   }, []);
 
   const deleteFlight = useCallback(async (id) => {
     assertSupabaseConfigured();
-    const { error } = await supabase.from(TABLE_NAME).delete().eq("id", id);
+    const userId = await getCurrentUserId();
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .update({
+        IsDeleted: true,
+        ...getUpdateAuditPayload(userId),
+      })
+      .eq("id", id);
 
     if (error) throw error;
 
@@ -170,7 +211,14 @@ export function useFlightDetailsStore() {
     assertSupabaseConfigured();
     if (!ids.length) return;
 
-    const { error } = await supabase.from(TABLE_NAME).delete().in("id", ids);
+    const userId = await getCurrentUserId();
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .update({
+        IsDeleted: true,
+        ...getUpdateAuditPayload(userId),
+      })
+      .in("id", ids);
 
     if (error) throw error;
 

@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 import { Card, Table, TBody, Td, Th, THead, Tr } from "components/ui";
 import { FlightDetailsModal } from "./FlightDetailsModal";
+import { FlightDetailsViewModal } from "./FlightDetailsViewModal";
 import { Page } from "components/shared/Page";
 import { PaginationSection } from "components/shared/table/PaginationSection";
 import { SelectedRowsActions } from "./SelectedRowsActions";
@@ -62,6 +63,8 @@ export default function FlightDetails() {
   const [modalMode, setModalMode] = useState("create");
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewFlight, setViewFlight] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   const [columnVisibility, setColumnVisibility] = useLocalStorage(
     "column-visibility-flight-details",
@@ -87,9 +90,19 @@ export default function FlightDetails() {
     setIsModalOpen(true);
   };
 
+  const openViewModal = (flight) => {
+    setViewFlight(flight);
+    setIsViewModalOpen(true);
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedFlight(null);
+  };
+
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setViewFlight(null);
   };
 
   const handleSaveFlight = async (values) => {
@@ -122,6 +135,7 @@ export default function FlightDetails() {
       refreshData: fetchFlights,
       openCreateModal,
       openEditModal,
+      openViewModal,
       deleteRow: async (row) => {
         skipAutoResetPageIndex();
         await deleteFlight(row.original.id);
@@ -344,6 +358,11 @@ export default function FlightDetails() {
           mode={modalMode}
           onClose={closeModal}
           onSubmit={handleSaveFlight}
+        />
+        <FlightDetailsViewModal
+          flight={viewFlight}
+          isOpen={isViewModalOpen}
+          onClose={closeViewModal}
         />
       </div>
     </Page>
