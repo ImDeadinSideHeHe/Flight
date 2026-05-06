@@ -77,7 +77,7 @@ function normalizeUser(user) {
   if (!user) return null;
 
   const metadata = user.user_metadata || {};
-  const name = metadata.full_name || metadata.name || user.email;
+  const name = metadata.display_name || metadata.name || user.email;
 
   return {
     id: user.id,

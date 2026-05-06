@@ -50,10 +50,10 @@ export function DateTimeCell({ getValue }) {
 }
 
 export function DurationCell({ row }) {
-  const duration = formatFlightDuration(
-    row.original.TakeOff_Time,
-    row.original.Landing_Time,
-  );
+  const savedDuration = row.original.Duration?.trim();
+  const duration =
+    savedDuration ||
+    formatFlightDuration(row.original.TakeOff_Time, row.original.Landing_Time);
 
   return (
     <p className="min-w-24 text-sm-plus font-semibold text-gray-800 dark:text-dark-100">

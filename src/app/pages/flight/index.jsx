@@ -29,6 +29,16 @@ import { useThemeContext } from "app/contexts/theme/context";
 
 const isSafari = getUserAgentBrowser() === "Safari";
 
+function flightIdFilter(row, _columnId, filterValue) {
+  const search = String(filterValue ?? "").trim().toLowerCase();
+
+  if (!search) return true;
+
+  return String(row.original.FlightID ?? "")
+    .toLowerCase()
+    .includes(search);
+}
+
 export default function FlightDetails() {
   const { cardSkin } = useThemeContext();
   const {
@@ -135,7 +145,7 @@ export default function FlightDetails() {
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    globalFilterFn: fuzzyFilter,
+    globalFilterFn: flightIdFilter,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

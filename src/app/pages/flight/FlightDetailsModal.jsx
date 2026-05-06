@@ -26,25 +26,67 @@ export function FlightDetailsModal({
 }) {
   const [values, setValues] = useState(emptyFlightForm);
   const [formError, setFormError] = useState("");
+  const [isDurationManual, setIsDurationManual] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setValues(getFlightFormValues(flight));
+      const formValues = getFlightFormValues(flight);
+      const autoDuration = formatFlightDuration(
+        formValues.TakeOff_Time,
+        formValues.Landing_Time,
+      );
+      const savedDuration = formValues.Duration.trim();
+
+      setValues({
+        ...formValues,
+        Duration: savedDuration || (autoDuration === "-" ? "" : autoDuration),
+      });
+      setIsDurationManual(
+        Boolean(savedDuration && savedDuration !== autoDuration),
+      );
       setFormError("");
     }
   }, [flight, isOpen]);
 
   const title = mode === "edit" ? "Edit Flight" : "New Flight";
   const actionText = mode === "edit" ? "Save Changes" : "Create Flight";
-  const duration = formatFlightDuration(
+  const autoDuration = formatFlightDuration(
     values.TakeOff_Time,
     values.Landing_Time,
   );
+  const durationPlaceholder =
+    autoDuration === "-" ? "Enter duration" : autoDuration;
 
   const updateField = (field) => (event) => {
+    const nextValue = event.target.value;
+
+    setValues((current) => {
+      const nextValues = {
+        ...current,
+        [field]: nextValue,
+      };
+
+      if (
+        !isDurationManual &&
+        (field === "TakeOff_Time" || field === "Landing_Time")
+      ) {
+        const nextDuration = formatFlightDuration(
+          nextValues.TakeOff_Time,
+          nextValues.Landing_Time,
+        );
+
+        nextValues.Duration = nextDuration === "-" ? "" : nextDuration;
+      }
+
+      return nextValues;
+    });
+  };
+
+  const updateDuration = (event) => {
+    setIsDurationManual(true);
     setValues((current) => ({
       ...current,
-      [field]: event.target.value,
+      Duration: event.target.value,
     }));
   };
 
@@ -56,7 +98,7 @@ export function FlightDetailsModal({
       return;
     }
 
-    if (values.TakeOff_Time && values.Landing_Time && duration === "-") {
+    if (values.TakeOff_Time && values.Landing_Time && autoDuration === "-") {
       setFormError("Landing time must be after takeoff time.");
       return;
     }
@@ -118,14 +160,12 @@ export function FlightDetailsModal({
                 label="Tail Number"
                 value={values.TailNumber}
                 onChange={updateField("TailNumber")}
-                placeholder="9V-SMA"
                 disabled={isSaving}
               />
               <Input
                 label="Flight ID"
                 value={values.FlightID}
                 onChange={updateField("FlightID")}
-                placeholder="SQ101"
                 disabled={isSaving}
               />
               <Input
@@ -143,10 +183,13 @@ export function FlightDetailsModal({
                 disabled={isSaving}
               />
               <div className="sm:col-span-2">
-                <span className="input-label">Duration</span>
-                <div className="mt-1.5 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm-plus font-medium text-gray-800 dark:border-dark-450 dark:bg-dark-600 dark:text-dark-50">
-                  {duration}
-                </div>
+                <Input
+                  label="Duration"
+                  value={values.Duration}
+                  onChange={updateDuration}
+                  placeholder={durationPlaceholder}
+                  disabled={isSaving}
+                />
               </div>
             </div>
 

@@ -80,7 +80,7 @@ function SearchInput({ table }) {
         input: "h-8 text-xs ring-primary-500/50 focus:ring-3",
         root: "shrink-0",
       }}
-      placeholder="Search flights..."
+      placeholder="Search by Flight ID..."
     />
   );
 }

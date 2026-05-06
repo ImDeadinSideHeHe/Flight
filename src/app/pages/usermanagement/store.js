@@ -125,7 +125,7 @@ export function useUserManagementStore() {
         options: {
           data: {
             display_name: payload.Username,
-            full_name: payload.Username,
+            name: payload.Username,
             phone: payload.Phone || "",
             username: normalizeUsername(payload.Username),
           },

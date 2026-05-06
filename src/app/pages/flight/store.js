@@ -10,6 +10,7 @@ export const emptyFlightForm = {
   FlightID: "",
   TakeOff_Time: "",
   Landing_Time: "",
+  Duration: "",
 };
 
 function toDatetimeInputValue(value) {
@@ -46,7 +47,13 @@ export function formatFlightDuration(takeoffTime, landingTime) {
 }
 
 function toPayload(values) {
-  const duration = formatFlightDuration(values.TakeOff_Time, values.Landing_Time);
+  const autoDuration = formatFlightDuration(
+    values.TakeOff_Time,
+    values.Landing_Time,
+  );
+  const manualDuration = values.Duration?.trim();
+  const duration =
+    manualDuration || (autoDuration === "-" ? null : autoDuration);
 
   return {
     TailNumber: values.TailNumber.trim(),
@@ -57,7 +64,7 @@ function toPayload(values) {
     Landing_Time: values.Landing_Time
       ? new Date(values.Landing_Time).toISOString()
       : null,
-    Duration: duration === "-" ? null : duration,
+    Duration: duration,
   };
 }
 
@@ -75,6 +82,7 @@ export function getFlightFormValues(flight) {
     FlightID: flight.FlightID ?? "",
     TakeOff_Time: toDatetimeInputValue(flight.TakeOff_Time),
     Landing_Time: toDatetimeInputValue(flight.Landing_Time),
+    Duration: flight.Duration ?? "",
   };
 }
 

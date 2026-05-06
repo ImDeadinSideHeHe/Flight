@@ -21,13 +21,12 @@ import { useDisclosure, useFuse } from "hooks";
 import { useThemeContext } from "app/contexts/theme/context";
 import { createScopedKeydownHandler } from "utils/dom/createScopedKeydownHandler";
 import { navigation } from "app/navigation";
-import { settings } from "app/navigation/settings";
 import { NAV_TYPE_COLLAPSE } from "constants/app.constant";
 import { Highlight } from "components/shared/Highlight";
 
 // ----------------------------------------------------------------------
 
-const data = flattenNav([...navigation,settings]);
+const data = flattenNav(navigation);
 
 export function Search({ renderButton }) {
   const [isOpen, { open, close }] = useDisclosure(false);

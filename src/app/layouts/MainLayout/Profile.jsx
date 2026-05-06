@@ -7,7 +7,6 @@ import {
 } from "@headlessui/react";
 import {
   ArrowLeftStartOnRectangleIcon,
-  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { TbUser } from "react-icons/tb";
 import { Link } from "react-router";
@@ -22,18 +21,10 @@ const links = [
   {
     id: "1",
     title: "Profile",
-    description: "Your profile Setting",
-    to: "/settings/general",
+    description: "Edit your account details",
+    to: "/profile",
     Icon: TbUser,
     color: "warning",
-  },
-  {
-    id: "5",
-    title: "Settings",
-    description: "Webapp settings",
-    to: "/settings/appearance",
-    Icon: Cog6ToothIcon,
-    color: "success",
   },
 ];
 
@@ -82,10 +73,11 @@ export function Profile() {
                   initialColor="primary"
                   initialVariant="soft"
                 />
-                <div>
+                <div className="min-w-0">
                   <Link
-                    className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 dark:focus:text-primary-400 text-base font-medium text-gray-700"
-                    to="/settings/general"
+                    className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 dark:focus:text-primary-400 block truncate text-base font-medium text-gray-700 outline-hidden transition-colors"
+                    to="/profile"
+                    onClick={close}
                   >
                     {displayName}
                   </Link>
@@ -101,7 +93,7 @@ export function Profile() {
                     key={link.id}
                     to={link.to}
                     onClick={close}
-                    className="group dark:hover:bg-dark-600 dark:focus:bg-dark-600 flex items-center gap-3 px-4 py-2 tracking-wide outline-hidden transition-all hover:bg-gray-100 focus:bg-gray-100"
+                    className="group dark:hover:bg-dark-600 dark:focus:bg-dark-600 flex items-center gap-3 px-4 py-2 text-left tracking-wide outline-hidden transition-all hover:bg-gray-100 focus:bg-gray-100"
                   >
                     <Avatar
                       size={8}

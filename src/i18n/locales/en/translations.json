@@ -6,11 +6,6 @@
     },
     "usermanagement": {
       "usermanagement": "User Management"
-    },
-    "settings": {
-      "settings": "Settings",
-      "general": "General",
-      "appearance": "Appearance"
     }
   }
 }

@@ -31,6 +31,7 @@ export function ThemeProvider({ children }) {
   const isDarkOS = useMediaQuery(COLOR_SCHEME_QUERY);
 
   const [settings, setSettings] = useLocalStorage("settings", {
+    defaultsVersion: initialState.defaultsVersion,
     themeMode: initialState.themeMode,
     themeLayout: initialState.themeLayout,
     cardSkin: initialState.cardSkin,
@@ -44,6 +45,23 @@ export function ThemeProvider({ children }) {
   const isDark =
     (settings.themeMode === "system" && isDarkOS) ||
     settings.themeMode === "dark";
+
+  useIsomorphicEffect(() => {
+    if (settings.defaultsVersion === initialState.defaultsVersion) return;
+
+    setSettings({
+      ...settings,
+      defaultsVersion: initialState.defaultsVersion,
+      themeMode: initialState.themeMode,
+      themeLayout: "main-layout",
+      cardSkin: initialState.cardSkin,
+      isMonochrome: initialState.isMonochrome,
+      darkColorScheme: initialState.darkColorScheme,
+      lightColorScheme: initialState.lightColorScheme,
+      primaryColorScheme: initialState.primaryColorScheme,
+      notification: { ...initialState.notification },
+    });
+  }, [setSettings, settings]);
 
   const setThemeMode = (val) => {
     setSettings((settings) => {
@@ -138,6 +156,7 @@ export function ThemeProvider({ children }) {
 
   const resetTheme = () => {
     setSettings({
+      defaultsVersion: initialState.defaultsVersion,
       themeMode: initialState.themeMode,
       themeLayout: initialState.themeLayout,
       isMonochrome: initialState.isMonochrome,

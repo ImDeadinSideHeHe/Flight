@@ -1,9 +1,9 @@
 import { colors } from "constants/colors.constant";  
 
-const DEFAULT_DARK_COLOR = "cinder";  
+const DEFAULT_DARK_COLOR = "black";
 // Options: "cinder", "navy", "mirage", "black", "mint"  
 
-const DEFAULT_LIGHT_COLOR = "slate";  
+const DEFAULT_LIGHT_COLOR = "neutral";
 // Options: "slate", "gray", "neutral"  
 
 const DEFAULT_PRIMARY_COLOR = "blue";  
@@ -11,14 +11,15 @@ const DEFAULT_PRIMARY_COLOR = "blue";
 
 // Default theme configuration  
 export const defaultTheme = {  
-    themeMode: "system",  
+    defaultsVersion: 2,
+    themeMode: "light",
     // Options: "light", "dark", "system"  
     isMonochrome: false,  
     // If true, the theme uses a monochrome color palette  
 
     themeLayout: "main-layout",  
     // The app uses the main layout only.
-    cardSkin: "bordered",  
+    cardSkin: "shadow",
     // Options: "bordered", "shadow"  
 
     // Dark mode color scheme  

@@ -1,5 +1,9 @@
 // Import Dependencies
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import {
+  MagnifyingGlassIcon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 // Local Imports
@@ -27,6 +31,28 @@ function SlashIcon(props) {
       />
       <path fill="currentColor" d="M11.8 6L8 15.1h-.9L10.8 6h1z" />
     </svg>
+  );
+}
+
+function ThemeModeToggle() {
+  const { isDark, setThemeMode } = useThemeContext();
+  const label = isDark ? "Switch to light mode" : "Switch to dark mode";
+
+  return (
+    <Button
+      onClick={() => setThemeMode(isDark ? "light" : "dark")}
+      variant="flat"
+      isIcon
+      title={label}
+      aria-label={label}
+      className="size-9 rounded-sm"
+    >
+      {isDark ? (
+        <SunIcon className="size-5" />
+      ) : (
+        <MoonIcon className="size-5" />
+      )}
+    </Button>
   );
 }
 
@@ -69,7 +95,10 @@ export function Header() {
             </>
           )}
         />
-        <Profile />
+        <div className="flex items-center gap-2">
+          <ThemeModeToggle />
+          <Profile />
+        </div>
       </div>
     </header>
   );
