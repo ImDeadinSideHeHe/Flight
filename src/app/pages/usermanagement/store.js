@@ -5,6 +5,7 @@ import {
   isSupabaseConfigured,
   supabase,
 } from "supabaseClient";
+import { normalizeAuthPassword } from "utils/authPassword";
 import { normalizeUsername, usernameToEmail } from "utils/userEmail";
 
 const TABLE_NAME = "User";
@@ -112,7 +113,7 @@ export function useUserManagementStore() {
 
     try {
       const payload = toPayload(values);
-      const password = values.Password.trim();
+      const password = normalizeAuthPassword(values.Password);
       const authClient = createSupabaseTransientClient();
 
       if (!authClient) {
@@ -196,7 +197,9 @@ export function useUserManagementStore() {
         );
       }
 
-      const { error } = await supabase.auth.updateUser({ password });
+      const { error } = await supabase.auth.updateUser({
+        password: normalizeAuthPassword(password),
+      });
 
       if (error) throw error;
 

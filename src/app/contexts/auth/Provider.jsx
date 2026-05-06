@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 // Local Imports
 import { isSupabaseConfigured, supabase } from "supabaseClient";
 import { AuthContext } from "./context";
+import { normalizeAuthPassword } from "utils/authPassword";
 import { normalizeUsername, usernameToEmail } from "utils/userEmail";
 
 // ----------------------------------------------------------------------
@@ -214,7 +215,7 @@ export function AuthProvider({ children }) {
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
-        password,
+        password: normalizeAuthPassword(password),
       });
 
       if (error) {

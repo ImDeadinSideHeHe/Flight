@@ -33,8 +33,8 @@ export function ChangePasswordModal({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (password.trim().length < 6) {
-      setFormError("Password must be at least 6 characters.");
+    if (!password.trim()) {
+      setFormError("Password is required.");
       return;
     }
 
@@ -104,7 +104,7 @@ export function ChangePasswordModal({
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Minimum 6 characters"
+              placeholder="Enter new password"
               autoComplete="new-password"
               disabled={isSaving}
             />

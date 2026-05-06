@@ -39,15 +39,15 @@ export function ChangePasswordModal({ isOpen, isSaving, onClose, onSubmit }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!values.currentPassword) {
+    if (!values.currentPassword.trim()) {
       const message = "Current password is required.";
       setFormError(message);
       toast.error(message);
       return;
     }
 
-    if (values.newPassword.length < 6) {
-      const message = "New password must be at least 6 characters.";
+    if (!values.newPassword.trim()) {
+      const message = "New password is required.";
       setFormError(message);
       toast.error(message);
       return;

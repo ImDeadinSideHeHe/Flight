@@ -69,8 +69,8 @@ export function UserManagementModal({
       return;
     }
 
-    if (mode === "create" && values.Password.trim().length < 6) {
-      setFormError("Password must be at least 6 characters.");
+    if (mode === "create" && !values.Password.trim()) {
+      setFormError("Password is required.");
       return;
     }
 
@@ -160,7 +160,7 @@ export function UserManagementModal({
                   type="password"
                   value={values.Password}
                   onChange={updateField("Password")}
-                  placeholder="Minimum 6 characters"
+                  placeholder="Enter password"
                   autoComplete="new-password"
                   disabled={isSaving}
                 />

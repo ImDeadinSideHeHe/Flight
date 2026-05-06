@@ -12,6 +12,7 @@ import { useAuthContext } from "app/contexts/auth/context";
 import { Page } from "components/shared/Page";
 import { Button, Card, GhostSpinner, Input } from "components/ui";
 import { isSupabaseConfigured, supabase } from "supabaseClient";
+import { normalizeAuthPassword } from "utils/authPassword";
 import { normalizeUsername } from "utils/userEmail";
 import { ChangePasswordModal } from "./ChangePasswordModal";
 
@@ -189,7 +190,7 @@ export default function ProfilePage() {
     try {
       const { error: verifyError } = await supabase.auth.signInWithPassword({
         email,
-        password: currentPassword,
+        password: normalizeAuthPassword(currentPassword),
       });
 
       if (verifyError) {
@@ -197,7 +198,7 @@ export default function ProfilePage() {
       }
 
       const { error } = await supabase.auth.updateUser({
-        password: newPassword,
+        password: normalizeAuthPassword(newPassword),
       });
 
       if (error) throw error;
