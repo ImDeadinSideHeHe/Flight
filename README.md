@@ -51,17 +51,6 @@ Main database tables:
 
 Deleted users are soft-deleted by setting `IsDeleted` to `true`, then hidden from the user management table.
 
-## Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-publishable-key
-```
-
-Use the Supabase publishable key for `VITE_SUPABASE_ANON_KEY`. Do not put the secret key in the frontend.
-
 ## Run Locally
 
 Install dependencies:
@@ -90,22 +79,5 @@ Create a production build:
 npm run build
 ```
 
-Preview the production build locally:
 
-```bash
-npm run preview
-```
 
-## Lint
-
-Run ESLint:
-
-```bash
-npm run lint
-```
-
-## Notes
-
-- Node.js 20 or newer is recommended for Vite 7.
-- The app expects Supabase Auth users to exist before login.
-- Usernames are converted into login emails by the app, so users can sign in with their username and password.
