@@ -1,4 +1,4 @@
-import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 
@@ -49,16 +49,6 @@ export function RowActions({ row, table }) {
   return (
     <>
       <div className="flex justify-start space-x-1.5">
-        <Button
-          isIcon
-          variant="flat"
-          className="size-8 rounded-full"
-          title="View flight details"
-          onClick={() => table.options.meta?.openViewModal(row.original)}
-        >
-          <EyeIcon className="size-4" />
-        </Button>
-
         <Button
           isIcon
           className="size-8 rounded-full"
